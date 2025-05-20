@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Problema de las N Reinas</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      background: #f0f0f0;
+    }
+    h1 {
+      margin-top: 20px;
+    }
+    .tablero {
+      display: grid;
+      grid-template-columns: repeat(8, 50px);
+      margin: 20px auto;
+      border: 2px solid #333;
+    }
+    .celda {
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+    }
+    .oscura {
+      background: #444;
+      color: white;
+    }
+    .clara {
+      background: #eee;
+      color: black;
+    }
+    .posiciones {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Problema de las N Reinas</h1>
+  <div class="tablero" id="tablero"></div>
+  <div class="posiciones" id="posiciones"></div>
+
+  <script>
+    const N = 8;
+    let posiciones = [];
+
+    function posicionValida(fila, col) {
+      for (let i = 0; i < fila; i++) {
+        const otraCol = posiciones[i];
+        if (
+          otraCol === col ||
+          Math.abs(otraCol - col) === fila - i
+        ) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    function resolver(fila = 0) {
+      if (fila === N) return true;
+      for (let col = 0; col < N; col++) {
+        if (posicionValida(fila, col)) {
+          posiciones[fila] = col;
+          if (resolver(fila + 1)) return true;
+        }
+      }
+      return false;
+    }
+
+    resolver();
+
+    // Tablero
+    const tablero = document.getElementById('tablero');
+    for (let fila = 0; fila < N; fila++) {
+      for (let col = 0; col < N; col++) {
+        const celda = document.createElement('div');
+        const esClara = (fila + col) % 2 === 0;
+        celda.className = 'celda ' + (esClara ? 'clara' : 'oscura');
+        if (posiciones[fila] === col) {
+          celda.textContent = '♛'; // Reina
+        }
+        tablero.appendChild(celda);
+      }
+    }
+
+    // Mostramos posiciones
+    const salida = posiciones.map((col, fila) => `[${fila}, ${col}]`);
+    document.getElementById('posiciones').textContent =
+      `📍 Posiciones de las reinas: ${salida.join(', ')}`;
+  </script>
+</body>
+</html>
