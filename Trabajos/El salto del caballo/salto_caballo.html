@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>El salto del caballo</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 30px;
+    }
+    .tablero {
+      display: grid;
+      grid-template-columns: repeat(8, 60px);
+      grid-template-rows: repeat(8, 60px);
+      gap: 1px;
+      border: 2px solid #333;
+      margin-bottom: 20px;
+    }
+    .casilla {
+      width: 60px;
+      height: 60px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      font-size: 18px;
+    }
+    .blanco {
+      background-color: #f0d9b5;
+    }
+    .negro {
+      background-color: #b58863;
+    }
+    .caballo {
+      background-color: #4CAF50;
+      color: white;
+      animation: resaltar 0.5s ease;
+    }
+    @keyframes resaltar {
+      0% { transform: scale(0.5); opacity: 0.2; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      margin-bottom: 20px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    p {
+      max-width: 600px;
+      text-align: center;
+      margin: 10px 20px 20px 20px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+<h2>El salto del caballo</h2>
+
+<p>
+  El algoritmo del salto del caballo recorre todas las casillas del tablero sin repetir ninguna. 
+  Si se agotan los ocho posibles movimientos sin alcanzar la solución, se vuelve al movimiento anterior.
+</p>
+
+<button id="reiniciarBtn">Reiniciar</button>
+<div class="tablero" id="tablero"></div>
+
+<script>
+  const N = 8;
+  let tablero = [];
+  const moves = [
+    [2, 1], [1, 2], [-1, 2], [-2, 1],
+    [-2, -1], [-1, -2], [1, -2], [2, -1]
+  ];
+
+  const contenedor = document.getElementById("tablero");
+
+  function crearTablero() {
+    contenedor.innerHTML = ""; 
+    tablero = [];
+
+    for (let i = 0; i < N; i++) {
+      tablero[i] = [];
+      for (let j = 0; j < N; j++) {
+        const div = document.createElement("div");
+        div.className = `casilla ${(i + j) % 2 === 0 ? 'blanco' : 'negro'}`;
+        div.id = `cell-${i}-${j}`;
+        contenedor.appendChild(div);
+        tablero[i][j] = -1;
+      }
+    }
+  }
+
+  function esValido(x, y) {
+    return x >= 0 && y >= 0 && x < N && y < N && tablero[x][y] === -1;
+  }
+
+  async function resolver(x, y, paso) {
+    tablero[x][y] = paso;
+    marcarCelda(x, y, paso);
+    if (paso === N * N - 1) return true;
+
+    for (const [dx, dy] of moves) {
+      const nx = x + dx;
+      const ny = y + dy;
+      if (esValido(nx, ny)) {
+        await esperar(200);
+        if (await resolver(nx, ny, paso + 1)) return true;
+      }
+    }
+
+    tablero[x][y] = -1;
+    desmarcarCelda(x, y);
+    await esperar(500);
+    return false;
+  }
+
+  function marcarCelda(x, y, paso) {
+    const celda = document.getElementById(`cell-${x}-${y}`);
+    celda.classList.add("caballo");
+    celda.textContent = paso + 1;
+  }
+
+  function desmarcarCelda(x, y) {
+    const celda = document.getElementById(`cell-${x}-${y}`);
+    celda.classList.remove("caballo");
+    celda.textContent = "";
+  }
+
+  function esperar(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  async function iniciarTour() {
+    crearTablero();
+    await resolver(0, 0, 0);
+  }
+
+  iniciarTour();
+
+  // Boton reiniciar
+  document.getElementById("reiniciarBtn").addEventListener("click", () => {
+    iniciarTour();
+  });
+</script>
+
+</body>
+</html>
