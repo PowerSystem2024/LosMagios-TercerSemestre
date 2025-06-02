@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Torres de Hanoi</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: sans-serif;
+      background: #f0f0f0;
+    }
+
+    #controls {
+      margin-top: 20px;
+    }
+
+    #controls input {
+      padding: 5px;
+      width: 50px;
+      font-size: 16px;
+    }
+
+    #controls button {
+      padding: 5px 10px;
+      font-size: 16px;
+      margin: 0 5px;
+    }
+
+    #hanoi {
+      display: flex;
+      justify-content: center;
+      margin-top: 40px;
+    }
+
+    .torre {
+      width: 120px;
+      height: 250px;
+      margin: 0 20px;
+      position: relative;
+      border: 2px solid #ccc;
+      background: #fff;
+    }
+
+    .palo {
+      width: 8px;
+      height: 200px;
+      background: #964B00;
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .disco {
+      position: absolute;
+      height: 20px;
+      background: #3498db;
+      border: 2px solid #2980b9;
+      border-radius: 4px;
+      transition: bottom 0.4s, left 0.4s;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Torres de Hanoi</h1>
+
+<div id="controls">
+  <label for="numDiscos">Número de discos:</label>
+  <input type="number" id="numDiscos" value="3" min="1" max="7" />
+  <button onclick="iniciarJuego()">Iniciar</button>
+  <button onclick="reiniciar()">Reiniciar</button>
+</div>
+
+<div id="hanoi">
+  <div class="torre" id="A"><div class="palo"></div></div>
+  <div class="torre" id="B"><div class="palo"></div></div>
+  <div class="torre" id="C"><div class="palo"></div></div>
+</div>
+
+<script>
+  let torres;
+  let enEjecucion = false;
+
+  function crearDiscos(n) {
+    torres = { A: [], B: [], C: [] };
+    const torreA = document.getElementById('A');
+    for (let i = n; i >= 1; i--) {
+      const disco = document.createElement('div');
+      disco.className = 'disco';
+      disco.style.width = `${20 + i * 20}px`;
+      disco.style.left = `${60 - (10 + i * 10)}px`;
+      disco.style.bottom = `${(n - i) * 22}px`;
+      disco.dataset.valor = i;
+      torreA.appendChild(disco);
+      torres.A.push(disco);
+    }
+  }
+
+  function limpiarTorres() {
+    ['A', 'B', 'C'].forEach(id => {
+      const torre = document.getElementById(id);
+      const discos = torre.querySelectorAll('.disco');
+      discos.forEach(d => torre.removeChild(d));
+    });
+  }
+
+  async function moverDisco(origen, destino) {
+    const disco = torres[origen].pop();
+    const torreDestino = document.getElementById(destino);
+
+    // Posición visual
+    disco.style.bottom = `${torres[destino].length * 22}px`;
+    torreDestino.appendChild(disco);
+    torres[destino].push(disco);
+
+    await new Promise(resolve => setTimeout(resolve, 600));
+  }
+
+  async function hanoi(n, origen, auxiliar, destino) {
+    if (!enEjecucion) return;
+    if (n === 1) {
+      await moverDisco(origen, destino);
+    } else {
+      await hanoi(n - 1, origen, destino, auxiliar);
+      await moverDisco(origen, destino);
+      await hanoi(n - 1, auxiliar, origen, destino);
+    }
+  }
+
+  function iniciarJuego() {
+    if (enEjecucion) return;
+    enEjecucion = true;
+    const n = parseInt(document.getElementById('numDiscos').value);
+    if (n < 1 || n > 7) {
+      alert('Elige un número entre 1 y 7');
+      return;
+    }
+    limpiarTorres();
+    crearDiscos(n);
+    setTimeout(() => hanoi(n, 'A', 'B', 'C').then(() => enEjecucion = false), 500);
+  }
+
+  function reiniciar() {
+    enEjecucion = false;
+    limpiarTorres();
+  }
+
+  crearDiscos(3);
+</script>
+
+</body>
+</html>
