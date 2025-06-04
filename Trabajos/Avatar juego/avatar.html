@@ -5,35 +5,35 @@
         <title>LA LEYENDA DE AANG: AVATAR</title>
     </head>
     <body>
-        <h1> AVATAR 🔥 💧 🌱 🍸</h1>
+        <h1>AVATAR 🔥 💧 🌱 🍸</h1>
 
         <section id="seleccionar-personaje">
             <h2>Elige tu Personaje</h2>
 
             <label for="zuko">Zuko</label>
-            <input type="radio" name="personaje" id="zuko" value="Zuko"/>
+            <input type="radio" name="personaje" id="zuko" value="Zuko" />
 
             <label for="katara">Katara</label>
-            <input type="radio" name="personaje" id="katara" value="Katara"/>
+            <input type="radio" name="personaje" id="katara" value="Katara" />
 
             <label for="aang">Aang</label>
-            <input type="radio" name="personaje" id="aang" value="Aang"/>
+            <input type="radio" name="personaje" id="aang" value="Aang" />
 
             <label for="toph">Toph</label>
-            <input type="radio" name="personaje" id="toph" value="Toph"/>
+            <input type="radio" name="personaje" id="toph" value="Toph" />
 
-            <button onclick="seleccionarPersonaje()">Seleccionar</button>
+            <button id="boton-personaje">Seleccionar</button>
         </section>
-        
+
         <section id="seleccionar-ataque">
             <h2>Elige tu ataque</h2>
-            <p>Tu personaje tiene <span>3</span> vidas</p>
-            <p>Los personajes del enemigo tienen <span>3</span> vidas</p>
+            <p>Tu personaje <span id="personaje-jugador"></span> tiene <span>3</span> vidas</p>
+            <p>El personaje <span id="personaje-enemigo"></span> del enemigo tiene <span>3</span> vidas</p>
             <p>
-                <button>Fuego 🔥</button>          
-                <button>Agua 💧</button>           
-                <button>Tierra 🌱</button>           
-                <button>Aire 🍸</button>           
+                <button>Fuego 🔥</button>
+                <button>Agua 💧</button>
+                <button>Tierra 🌱</button>
+                <button>Aire 🍸</button>
             </p>
         </section>
 
@@ -46,14 +46,53 @@
         </section>
 
         <script>
-            function seleccionarPersonaje() {
-                const seleccion = document.querySelector('input[name="personaje"]:checked');
-                if (seleccion) {
-                    alert("Elegiste a " + seleccion.value );
-                } else {
-                    alert("Por favor selecciona un personaje.");
-                }
+            function iniciarJuego() {
+                let botonPersonajeJugador = document.getElementById("boton-personaje");
+                botonPersonajeJugador.addEventListener("click", seleccionarPersonajeJugador);
             }
+
+            function seleccionarPersonajeJugador() {
+                let inputZuko = document.getElementById('zuko');
+                let inputKatara = document.getElementById('katara');
+                let inputAang = document.getElementById('aang');
+                let inputToph = document.getElementById('toph');
+                let spanPersonajeJugador = document.getElementById('personaje-jugador');
+
+                let personajeSeleccionado = "";
+
+                if (inputZuko.checked) {
+                    personajeSeleccionado = 'Zuko';
+                } else if (inputKatara.checked) {
+                    personajeSeleccionado = 'Katara';
+                } else if (inputAang.checked) {
+                    personajeSeleccionado = 'Aang';
+                } else if (inputToph.checked) {
+                    personajeSeleccionado = 'Toph';
+                } else {
+                    alert('Selecciona un personaje');
+                    return;
+                }
+
+                spanPersonajeJugador.innerHTML = personajeSeleccionado;
+
+                // Cambiar el título de la pestaña
+                document.title = "Tu personaje: " + personajeSeleccionado;
+
+                // Elegir personaje enemigo aleatorio
+                seleccionarPersonajeEnemigo(personajeSeleccionado);
+            }
+
+            function seleccionarPersonajeEnemigo(personajeJugador) {
+                const personajes = ["Zuko", "Katara", "Aang", "Toph"];
+                const personajesDisponibles = personajes.filter(p => p !== personajeJugador);
+                const numeroAleatorio = Math.floor(Math.random() * personajesDisponibles.length);
+                const personajePC = personajesDisponibles[numeroAleatorio];
+
+                let spanEnemigo = document.getElementById("personaje-enemigo");
+                spanEnemigo.innerHTML = personajePC;
+            }
+
+            window.addEventListener("load", iniciarJuego);
         </script>
     </body>
 </html>
