@@ -1,6 +1,6 @@
-function iniciarjuego() {
-    let botonPersonajeJugador = document.getElementById(boton-personaje);
-    botonPersonajeJugador.addEventListener(click, seleccionarPersonajeJugador);
+function iniciarJuego() {
+    let botonPersonajeJugador = document.getElementById("boton-personaje");
+    botonPersonajeJugador.addEventListener("click", seleccionarPersonajeJugador);
 }
 
 function seleccionarPersonajeJugador() {
@@ -10,31 +10,37 @@ function seleccionarPersonajeJugador() {
     let inputToph = document.getElementById('toph');
     let spanPersonajeJugador = document.getElementById('personaje-jugador');
 
-    // Verificamos cuál está seleccionado y mostramos el nombre
+    let personajeSeleccionado = "";
+
     if (inputZuko.checked) {
-        spanPersonajeJugador.innerHTML = 'Zuko';
+        personajeSeleccionado = 'Zuko';
     } else if (inputKatara.checked) {
-        spanPersonajeJugador.innerHTML = 'Katara';
+        personajeSeleccionado = 'Katara';
     } else if (inputAang.checked) {
-        spanPersonajeJugador.innerHTML = 'Aang';
+        personajeSeleccionado = 'Aang';
     } else if (inputToph.checked) {
-        spanPersonajeJugador.innerHTML = 'Toph';
+        personajeSeleccionado = 'Toph';
     } else {
         alert('Selecciona un personaje');
-        return; // No sigue si no seleccionaste nada
+        return;
     }
 
-    // Llamamos a la función para que la PC elija su personaje
-    aleatoria();
+    spanPersonajeJugador.innerHTML = personajeSeleccionado;
+
+    document.title = "Tu personaje: " + personajeSeleccionado;
+
+    // Elegir personaje enemigo aleatorio
+    seleccionarPersonajeEnemigo(personajeSeleccionado);
 }
 
-function aleatoria() {
+function seleccionarPersonajeEnemigo(personajeJugador) {
     const personajes = ["Zuko", "Katara", "Aang", "Toph"];
-    const numeroAleatorio = Math.floor(Math.random() * personajes.length);
-    const personajePC = personajes[numeroAleatorio];
+    const personajesDisponibles = personajes.filter(p => p !== personajeJugador);
+    const numeroAleatorio = Math.floor(Math.random() * personajesDisponibles.length);
+    const personajePC = personajesDisponibles[numeroAleatorio];
 
     let spanEnemigo = document.getElementById("personaje-enemigo");
     spanEnemigo.innerHTML = personajePC;
 }
 
-window.addEventListener('load', iniciarjuego);
+window.addEventListener("load", iniciarJuego);
